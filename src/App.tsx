@@ -10,7 +10,15 @@ import NotFound from '@/pages/NotFound';
 type Route = 'home' | 'admin' | 'product' | 'cart' | 'checkout' | 'notfound';
 
 function parseRoute(): { route: Route; param?: string } {
-  const path = window.location.pathname.toLowerCase();
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const currentPath = window.location.pathname;
+  const path = (
+    basePath &&
+    (currentPath === basePath ||
+     currentPath.startsWith(`${basePath}/`))
+    ? currentPath.slice(basePath.length) || '/'
+    : currentPath
+).toLowerCase();
   if (path === '/' || path === '') return { route: 'home' };
   if (path.startsWith('/admin')) return { route: 'admin' };
   if (path.startsWith('/cart')) return { route: 'cart' };

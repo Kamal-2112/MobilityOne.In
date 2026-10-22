@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 export default function NotFound() {
   useEffect(() => {
     updateDocumentMeta({
-      title: 'Page Not Found — OrthoCare',
+      title: 'Page Not Found — MobilityOne',
       description: 'The page you are looking for could not be found. Browse our prosthetics and orthotics catalog instead.',
       canonicalPath: '/404',
     });

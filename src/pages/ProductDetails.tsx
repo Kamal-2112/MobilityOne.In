@@ -37,7 +37,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
   useEffect(() => {
     if (!product) {
       updateDocumentMeta({
-        title: 'Product Not Found — OrthoCare',
+        title: 'Product Not Found — MobilityOne',
         description: 'The requested product could not be found.',
         canonicalPath: '/404',
       });
@@ -48,7 +48,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
     const canonicalUrl = `${SITE_URL}${canonicalPath}`;
 
     updateDocumentMeta({
-      title: `${product.title} — OrthoCare`,
+      title: `${product.title} — MobilityOne`,
       description: product.description.slice(0, 155),
       canonicalPath,
       ogType: 'product',
@@ -123,7 +123,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
             <div className="aspect-square rounded-3xl overflow-hidden shadow-card bg-gray-50">
               <img
                 src={product.image}
-                alt={`${product.title} — ${product.category} from OrthoCare`}
+                alt={`${product.title} — ${product.category} from MobilityOne`}
                 className="w-full h-full object-cover"
                 width={940}
                 height={940}
@@ -244,7 +244,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                   <div className="aspect-[4/3] overflow-hidden bg-gray-50">
                     <img
                       src={p.image}
-                      alt={`${p.title} — ${p.category} from OrthoCare`}
+                      alt={`${p.title} — ${p.category} from MobilityOne`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       width={940}
                       height={705}

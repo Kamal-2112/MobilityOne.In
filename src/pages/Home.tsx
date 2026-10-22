@@ -35,7 +35,7 @@ function MedicalPlus({ size = 36, className = '' }: { size?: number; className?:
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white" aria-label="OrthoCare prosthetics and orthotics">
+    <section className="relative overflow-hidden bg-white" aria-label="MobilityOne prosthetics and orthotics">
       <Plus className="plus-decoration top-12 right-[8%] w-20 h-20 text-pink/60" strokeWidth={1.5} aria-hidden="true" />
       <Plus className="plus-decoration top-1/2 right-[5%] w-12 h-12 text-pink/40" strokeWidth={2} aria-hidden="true" />
       <Plus className="plus-decoration bottom-16 left-[3%] w-16 h-16 text-pink/40" strokeWidth={1.5} aria-hidden="true" />
@@ -184,7 +184,7 @@ function FeaturedProducts() {
               <div className="aspect-[4/3] overflow-hidden bg-gray-50 relative">
                 <img
                   src={product.image}
-                  alt={`${product.title} — ${product.category} from OrthoCare`}
+                  alt={`${product.title} — ${product.category} from MobilityOne`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   width={940}
                   height={705}
@@ -335,7 +335,7 @@ function Footer() {
           <div>
             <div className="flex items-center gap-2.5 mb-4">
               <MedicalPlus size={38} />
-              <span className="text-xl font-extrabold tracking-tight">OrthoCare</span>
+              <span className="text-xl font-extrabold tracking-tight">MobilityOne</span>
             </div>
             <p className="text-sm text-white/50 leading-relaxed">
               Premium prosthetics and orthotics for a life in motion.
@@ -370,7 +370,7 @@ function Footer() {
           </nav>
         </div>
         <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/40">© 2026 OrthoCare. All rights reserved.</p>
+          <p className="text-sm text-white/40">© 2026 MobilityOne. All rights reserved.</p>
           <div className="flex gap-6 text-sm text-white/40">
             <a href="/" className="hover:text-primary transition-colors">Privacy Policy</a>
             <a href="/" className="hover:text-primary transition-colors">Terms of Service</a>
@@ -384,21 +384,21 @@ function Footer() {
 export default function Home() {
   useEffect(() => {
     updateDocumentMeta({
-      title: 'OrthoCare — Premium Prosthetics & Orthotics E-Commerce',
-      description: 'Shop premium prosthetics and orthotics from OrthoCare. Prosthetic legs, AFO and KAFO braces, orthotic insoles, spinal orthoses, and custom orthotic solutions for restored mobility.',
+      title: 'MobilityOne — Premium Prosthetics & Orthotics E-Commerce',
+      description: 'Shop premium prosthetics and orthotics from MobilityOne. Prosthetic legs, AFO and KAFO braces, orthotic insoles, spinal orthoses, and custom orthotic solutions for restored mobility.',
       canonicalPath: '/',
       jsonLd: [
         {
           '@context': 'https://schema.org',
           '@type': 'Organization',
-          name: 'OrthoCare',
+          name: 'MobilityOne',
           url: SITE_URL,
           description: 'Premium prosthetics and orthotics e-commerce for a life in motion.',
         },
         {
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: 'OrthoCare',
+          name: 'MobilityOne',
           url: SITE_URL,
         },
       ],

@@ -37,7 +37,7 @@ export default function Checkout() {
 
   useEffect(() => {
     updateDocumentMeta({
-      title: 'Checkout — OrthoCare',
+      title: 'Checkout — MobilityOne',
       description: 'Complete your prosthetics and orthotics purchase securely.',
       canonicalPath: '/checkout',
     });

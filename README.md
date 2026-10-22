@@ -1,10 +1,10 @@
-# OrthoCare — Prosthetics & Orthotics E-Commerce
+# MobilityOne — Prosthetics & Orthotics E-Commerce
 
 A modern, accessible, SEO-friendly e-commerce website for premium prosthetics and orthotics products. Built with React, TypeScript, Vite, and Tailwind CSS.
 
 ## Overview
 
-OrthoCare is a healthcare e-commerce storefront featuring a clean medical-themed design with a red and pale-pink brand palette. The site includes a product catalog, individual product detail pages, a shopping cart with localStorage persistence, a checkout flow with form validation, and an admin dashboard.
+MobilityOne is a healthcare e-commerce storefront featuring a clean medical-themed design with a red and pale-pink brand palette. The site includes a product catalog, individual product detail pages, a shopping cart with localStorage persistence, a checkout flow with form validation, and an admin dashboard.
 
 ## Main Features
 
@@ -29,7 +29,7 @@ OrthoCare is a healthcare e-commerce storefront featuring a clean medical-themed
 ## Project Structure
 
 ```
-orthocare/
+mobilityone/
 ├── public/
 │   ├── robots.txt          # SEO crawl directives
 │   └── sitemap.xml          # XML sitemap for search engines
@@ -71,7 +71,7 @@ orthocare/
 
    ```bash
    git clone <your-repository-url>
-   cd orthocare
+   cd mobilityone
    ```
 
 2. **Install dependencies:**

@@ -35,9 +35,9 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-soft" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <button onClick={() => go('/')} className="flex items-center gap-2.5 cursor-pointer" aria-label="OrthoCare home">
+          <button onClick={() => go('/')} className="flex items-center gap-2.5 cursor-pointer" aria-label="MobilityOne home">
             <MedicalPlus size={38} />
-            <span className="text-xl font-extrabold text-navy tracking-tight">OrthoCare</span>
+            <span className="text-xl font-extrabold text-navy tracking-tight">MobilityOne</span>
           </button>
 
           <div className="hidden md:flex items-center gap-8">

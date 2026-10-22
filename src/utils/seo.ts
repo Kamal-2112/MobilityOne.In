@@ -7,7 +7,7 @@ export type SeoMeta = {
   jsonLd?: object[];
 };
 
-const SITE_URL = 'https://orthocare.example.com';
+const SITE_URL = 'https://mobilityone.in';
 
 export function getCanonicalUrl(path: string): string {
   return `${SITE_URL}${path}`;

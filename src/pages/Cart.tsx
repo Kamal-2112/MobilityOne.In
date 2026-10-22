@@ -20,7 +20,7 @@ export default function Cart() {
 
   useEffect(() => {
     updateDocumentMeta({
-      title: 'Shopping Cart — OrthoCare',
+      title: 'Shopping Cart — MobilityOne',
       description: 'Review your selected prosthetics and orthotics before checkout.',
       canonicalPath: '/cart',
     });

@@ -143,7 +143,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
       >
         <div className="flex items-center gap-2.5 px-6 h-16 border-b border-white/10">
           <MedicalPlusLogo size={36} />
-          <span className="text-lg font-extrabold tracking-tight">OrthoCare</span>
+          <span className="text-lg font-extrabold tracking-tight">MobilityOne</span>
         </div>
         <nav className="px-4 py-6 space-y-1 flex-1">
           {links.map((link) => (

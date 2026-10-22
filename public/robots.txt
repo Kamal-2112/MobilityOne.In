@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /cart
 Disallow: /checkout
 
-Sitemap: https://orthocare.example.com/sitemap.xml
+Sitemap: https://mobilityone.in/sitemap.xml

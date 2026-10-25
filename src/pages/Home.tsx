@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Plus,
   ShoppingCart,
@@ -11,11 +11,14 @@ import {
   Star,
   Truck,
   CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
-import { products, categories } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import Navbar, { navigate } from '@/components/Navbar';
 import { updateDocumentMeta, SITE_URL } from '@/utils/seo';
+import { fetchProducts, fetchCategories } from '@/services/catalog';
+import { mapProduct, mapCategory, type Product, type Category } from '@/utils/catalogMapper';
 
 function MedicalPlus({ size = 36, className = '' }: { size?: number; className?: string }) {
   return (
@@ -155,6 +158,26 @@ function TrustBar() {
 
 function FeaturedProducts() {
   const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const dbProducts = await fetchProducts();
+      setProducts(dbProducts.map(mapProduct));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <section id="products" className="bg-surface py-16 md:py-24 scroll-mt-20" aria-label="Featured prosthetics and orthotics products">
@@ -173,6 +196,37 @@ function FeaturedProducts() {
           </p>
         </div>
 
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" aria-hidden="true" />
+            <p className="text-sm font-semibold text-navy/50">Loading products…</p>
+          </div>
+        )}
+
+        {error && !loading && (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <div className="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center">
+              <AlertCircle className="w-7 h-7 text-primary" aria-hidden="true" />
+            </div>
+            <p className="text-sm font-semibold text-navy">Failed to load products</p>
+            <p className="text-xs text-navy/40 max-w-md text-center">{error}</p>
+            <button onClick={load} className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors">
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && products.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center">
+              <ShoppingCart className="w-7 h-7 text-primary" aria-hidden="true" />
+            </div>
+            <p className="text-sm font-semibold text-navy">No products available</p>
+            <p className="text-xs text-navy/40">Check back soon for new arrivals.</p>
+          </div>
+        )}
+
+        {!loading && !error && products.length > 0 && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
             <article
@@ -228,12 +282,34 @@ function FeaturedProducts() {
             </article>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
 }
 
 function CategoryCards() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const dbCategories = await fetchCategories();
+      setCategories(dbCategories.map(mapCategory));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load categories');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
   return (
     <section className="bg-white py-16 md:py-24 relative overflow-hidden" aria-label="Product categories">
       <Plus className="plus-decoration top-10 right-[5%] w-24 h-24 text-pink/40" strokeWidth={1} aria-hidden="true" />
@@ -254,6 +330,23 @@ function CategoryCards() {
           </p>
         </div>
 
+        {loading && (
+          <div className="flex justify-center py-16">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" aria-hidden="true" />
+          </div>
+        )}
+
+        {error && !loading && (
+          <div className="flex flex-col items-center justify-center py-16 gap-4">
+            <AlertCircle className="w-7 h-7 text-primary" aria-hidden="true" />
+            <p className="text-sm font-semibold text-navy">Failed to load categories</p>
+            <button onClick={load} className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors">
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && categories.length > 0 && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((cat) => (
             <article
@@ -293,6 +386,7 @@ function CategoryCards() {
             </article>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

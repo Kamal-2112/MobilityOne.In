@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ShieldCheck, Plus, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Plus, AlertCircle, Loader2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import Navbar, { navigate } from '@/components/Navbar';
 import { updateDocumentMeta } from '@/utils/seo';
+import { createOrder } from '@/services/catalog';
 
 type FormErrors = {
   name?: string;
@@ -34,6 +35,8 @@ export default function Checkout() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
     updateDocumentMeta({
@@ -42,6 +45,32 @@ export default function Checkout() {
       canonicalPath: '/checkout',
     });
   }, []);
+
+  if (orderSuccess) {
+    return (
+      <div className="bg-surface min-h-screen">
+        <Navbar />
+        <div className="max-w-2xl mx-auto px-4 py-16">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-8 h-8 text-emerald-600" aria-hidden="true" />
+            </div>
+            <h1 className="text-2xl font-extrabold text-navy mb-3">Order Received</h1>
+            <p className="text-navy/50 mb-6">
+              Thank you for your order. We've received your delivery details and our team will contact you shortly to confirm and arrange shipping.
+            </p>
+            <p className="text-sm text-navy/40 mb-8">No payment has been processed. Payment is arranged after order confirmation.</p>
+            <button
+              onClick={() => navigate('/')}
+              className="px-7 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/25"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -80,16 +109,34 @@ export default function Checkout() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    // Simulate processing — no fake success/confirmation
-    setTimeout(() => {
+    setOrderError(null);
+
+    try {
+      await createOrder({
+        customer_name: form.name.trim(),
+        phone: form.phone.trim(),
+        address: form.address.trim(),
+        city: form.city.trim(),
+        zip: form.zip.trim(),
+        total,
+        items: items.map((item) => ({
+          product_id: item.product.id,
+          product_name: item.product.title,
+          quantity: item.quantity,
+          unit_price: item.product.price,
+        })),
+      });
       clearCart();
+      setOrderSuccess(true);
       setSubmitting(false);
-      navigate('/');
-    }, 1000);
+    } catch (err) {
+      setOrderError(err instanceof Error ? err.message : 'Failed to place order. Please try again.');
+      setSubmitting(false);
+    }
   };
 
   const fieldClass = (field: keyof FormErrors) =>
@@ -239,13 +286,26 @@ export default function Checkout() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full px-6 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/25 disabled:opacity-60"
+                className="w-full px-6 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/25 disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                {submitting ? 'Processing...' : 'Place Order'}
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Placing Order...
+                  </>
+                ) : (
+                  'Place Order'
+                )}
               </button>
+              {orderError && (
+                <div className="flex items-center gap-1.5 text-sm text-primary mt-3 justify-center">
+                  <AlertCircle className="w-4 h-4" />
+                  {orderError}
+                </div>
+              )}
               <div className="flex items-center gap-2 mt-4 justify-center">
                 <ShieldCheck className="w-4 h-4 text-primary" />
-                <span className="text-xs text-navy/40">Your information is kept private and secure</span>
+                <span className="text-xs text-navy/40">No payment details required. Payment arranged after confirmation.</span>
               </div>
             </div>
           </div>

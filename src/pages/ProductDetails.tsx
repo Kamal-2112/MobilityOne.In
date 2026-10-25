@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Plus,
   Star,
@@ -6,12 +6,15 @@ import {
   Heart,
   ShieldCheck,
   Truck,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
-import { getProductById, products } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import Navbar, { navigate } from '@/components/Navbar';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { updateDocumentMeta, SITE_URL } from '@/utils/seo';
+import { fetchProductBySlug, fetchRelatedProducts } from '@/services/catalog';
+import { mapProduct, type Product } from '@/utils/catalogMapper';
 
 function MedicalPlus({ size = 38, className = '' }: { size?: number; className?: string }) {
   return (
@@ -25,17 +28,50 @@ function MedicalPlus({ size = 38, className = '' }: { size?: number; className?:
 }
 
 export default function ProductDetails({ productId }: { productId: string }) {
-  const product = getProductById(productId);
   const { addToCart } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setProduct(null);
+    setRelated([]);
+    try {
+      const dbProduct = await fetchProductBySlug(productId);
+      if (!dbProduct) {
+        setLoading(false);
+        return;
+      }
+      const mapped = mapProduct(dbProduct);
+      setProduct(mapped);
+
+      try {
+        const dbRelated = await fetchRelatedProducts(dbProduct.category_id, dbProduct.slug);
+        setRelated(dbRelated.map(mapProduct));
+      } catch {
+        // related products are non-critical
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load product');
+    } finally {
+      setLoading(false);
+    }
   }, [productId]);
 
   useEffect(() => {
-    if (!product) {
+    window.scrollTo(0, 0);
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (error || !product) {
       updateDocumentMeta({
         title: 'Product Not Found — MobilityOne',
         description: 'The requested product could not be found.',
@@ -79,7 +115,37 @@ export default function ProductDetails({ productId }: { productId: string }) {
         },
       ],
     });
-  }, [productId, product]);
+  }, [product, loading, error]);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" aria-hidden="true" />
+          <p className="text-sm font-semibold text-navy/50">Loading product…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white min-h-screen">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+          <div className="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center">
+            <AlertCircle className="w-7 h-7 text-primary" aria-hidden="true" />
+          </div>
+          <p className="text-lg font-bold text-navy">Failed to load product</p>
+          <p className="text-sm text-navy/40 max-w-md text-center">{error}</p>
+          <button onClick={load} className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -94,8 +160,6 @@ export default function ProductDetails({ productId }: { productId: string }) {
       </div>
     );
   }
-
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
 
   const handleAddToCart = () => {
     addToCart(product, qty);

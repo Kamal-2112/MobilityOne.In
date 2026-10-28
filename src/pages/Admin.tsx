@@ -119,13 +119,13 @@ function MedicalPlusLogo({ size = 36 }: { size?: number }) {
   );
 }
 
-function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+function Sidebar({ open, onClose, section }: { open: boolean; onClose: () => void; section: string }) {
   const links = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Package, label: 'Products', active: false },
-    { icon: ShoppingBag, label: 'Orders', active: false },
-    { icon: Users, label: 'Patients', active: false },
-    { icon: Settings, label: 'Settings', active: false },
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/admin', section: 'dashboard' },
+    { icon: Package, label: 'Products', href: '/admin/products', section: 'products' },
+    { icon: ShoppingBag, label: 'Orders', href: '/admin/orders', section: 'orders' },
+    { icon: Users, label: 'Patients', href: '/admin/patients', section: 'patients' },
+    { icon: Settings, label: 'Settings', href: '/admin/settings', section: 'settings' },
   ];
 
   return (
@@ -149,9 +149,11 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           {links.map((link) => (
             <a
               key={link.label}
-              href="#"
+              href={link.href}
+              onClick={onClose}
+              aria-current={section === link.section ? 'page' : undefined}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                link.active
+                section === link.section
                   ? 'bg-primary text-white shadow-lg shadow-primary/30'
                   : 'text-white/50 hover:text-white hover:bg-white/5'
               }`}
@@ -179,10 +181,13 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 export default function Admin() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const section = window.location.pathname.replace(/\/$/, '').split('/')[2] || 'dashboard';
+  const sectionTitles: Record<string, string> = { dashboard: 'Dashboard', products: 'Products', orders: 'Orders', patients: 'Patients', settings: 'Settings' };
+  const sectionTitle = sectionTitles[section] || 'Dashboard';
 
   return (
     <div className="min-h-screen bg-surface flex">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} section={sectionTitle === 'Dashboard' ? 'dashboard' : section} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-soft">
@@ -194,7 +199,7 @@ export default function Admin() {
               <Menu className="w-6 h-6" />
             </button>
             <div>
-              <h1 className="text-lg font-extrabold text-navy">Dashboard</h1>
+              <h1 className="text-lg font-extrabold text-navy">{sectionTitle}</h1>
               <p className="text-xs text-navy/40 hidden sm:block">
                 Welcome back, Dr. Admin
               </p>
@@ -219,6 +224,16 @@ export default function Admin() {
         </header>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+          {section !== 'dashboard' && sectionTitles[section] ? (
+            <section className="bg-white rounded-2xl border border-gray-100 shadow-card p-6 sm:p-8">
+              <h2 className="text-xl font-extrabold text-navy mb-2">{sectionTitle}</h2>
+              {section === 'products' && <p className="text-sm text-navy/60">Product management section is open. The storefront catalogue remains available through the existing Products page and catalogue service.</p>}
+              {section === 'orders' && <p className="text-sm text-navy/60">Orders section is open. Connect or configure the orders data source to display live customer orders here.</p>}
+              {section === 'patients' && <p className="text-sm text-navy/60">No patient records are displayed because no patient-list data source is configured in this project.</p>}
+              {section === 'settings' && <SettingsPanel />}
+            </section>
+          ) : (
+          <>
           {/* Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {stats.map((stat) => (
@@ -327,8 +342,28 @@ export default function Admin() {
               </a>
             </div>
           </div>
+          </>
+          )}
         </main>
       </div>
+    </div>
+  );
+}
+
+function SettingsPanel() {
+  const [compact, setCompact] = useState(false);
+  const [notifications, setNotifications] = useState(true);
+  return (
+    <div className="mt-5 space-y-4 max-w-xl">
+      <label className="flex items-center justify-between gap-4 border-b border-gray-100 pb-4 text-sm text-navy">
+        <span>Enable dashboard notifications</span>
+        <input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} />
+      </label>
+      <label className="flex items-center justify-between gap-4 text-sm text-navy">
+        <span>Compact dashboard layout (current session)</span>
+        <input type="checkbox" checked={compact} onChange={(event) => setCompact(event.target.checked)} />
+      </label>
+      <p className="text-xs text-navy/50">These are local UI preferences only; they are not saved to a server.</p>
     </div>
   );
 }
